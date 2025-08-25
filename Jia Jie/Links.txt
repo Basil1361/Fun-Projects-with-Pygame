@@ -1,0 +1,7 @@
+Pygame colours
+https://www.pygame.org/docs/ref/color_list.html
+
+
+Pygame documentation
+https://www.pygame.org/docs/ref/examples.html
+

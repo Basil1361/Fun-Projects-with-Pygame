@@ -1,4 +1,3 @@
-# file: pygame_window.py
 import sys, pygame
 
 pygame.init()

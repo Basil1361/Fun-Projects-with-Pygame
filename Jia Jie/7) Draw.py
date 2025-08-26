@@ -12,6 +12,7 @@ font = pg.font.Font(link,50)
 sky_surf = pg.image.load("D:\Pygame\Jia Jie\InputFiles\graphics\Sky.png").convert_alpha()
 ground_surf = pg.image.load("D:\Pygame\Jia Jie\InputFiles\graphics\ground.png").convert_alpha()
 text_surf = font.render("Hello", True, "Black")
+text_rect = text_surf.get_rect(center = (400, 50))
 
 # snail
 snail_surf = pg.image.load("D:\Pygame\Jia Jie\InputFiles\graphics\snail\snail1.png").convert_alpha()
@@ -26,10 +27,29 @@ while True:
         if event.type == pg.QUIT:
             pg.quit()
             exit()
+        # if event.type == pg.MOUSEMOTION:
+        #     print(event.pos)
+        # checking coordinates
+        
+        # if event.type == pg.MOUSEBUTTONDOWN:
+        #     print('Mouse Down')
+        # # triggered in pressed
+        
+        # if event.type == pg.MOUSEBUTTONUP:
+        #     print('Mouse Up')
+        # triggered if released after pressed
+        
 
     screen.blit(sky_surf,(0, 0))
     screen.blit(ground_surf,(0, 300))
-    screen.blit(text_surf,(300, 50))
+    # adding borders / margin
+    # pg.draw.rect(screen, "Pink",text_rect)
+    # pg.draw.rect(screen, "Pink",text_rect, 10)
+    
+    # adding lines
+    # # line(surface, color, start_pos, end_pos, width=1) -> Rect
+    # pg.draw.line(screen, "Pink", (0,0), pg.mouse.get_pos(), 10)
+    screen.blit(text_surf,text_rect)
     snail_rect.x -= 4
     if snail_rect.right <= 0: 
         snail_rect.left = 800 
@@ -37,10 +57,11 @@ while True:
     screen.blit(snail_surf, snail_rect)
     screen.blit(player_surf, player_rect)
     
-    # collisions
-    if print(player_rect.colliderect(snail_rect)):
-        print("Collision")
+    # mouse collision
+    # mouse_point = pg.mouse.get_pos()
+    # if player_rect.collidepoint(mouse_point):
+    #     print(pg.mouse.get_pressed())
         
-    # This collision system will cause python to check every frame, thats why it's multiple times 
+
     pg.display.update()
     clock.tick(120)

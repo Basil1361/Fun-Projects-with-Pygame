@@ -1,5 +1,3 @@
-#在窗⼝上绘制⼀个指针时钟（带时针、分针和秒针），并在窗⼝左上⻆以数字形式显⽰当前时间，效果如图18.14所⽰。
-
 import pygame, sys, time
 from pygame.locals import *
 
@@ -46,4 +44,5 @@ if __name__ == "__main__":
             sys.exit()
 
         time.sleep(0.5)
+
 

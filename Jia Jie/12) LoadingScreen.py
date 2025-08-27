@@ -1,9 +1,8 @@
-# implementing physics (jump + gravity)
-# implementing keyboard input
-# creating a floor
+#  Creating a timer
 
 import pygame as pg
 from sys import exit    
+
 
 pg.init()
 screen = pg.display.set_mode((800, 400), pg.RESIZABLE)
@@ -32,8 +31,35 @@ player_rect = player_surf.get_rect(bottomright = (80, 300))
 player_gravity = 0
 key = pg.key.get_pressed()
 
+# player stand
+player_stand = pg.image.load("D:\Pygame\Jia Jie\InputFiles\graphics\Player\player_stand.png").convert_alpha()
+# player_stand = pg.transform.scale2x(player_stand) -> 2x the original size
+player_stand = pg.transform.rotozoom(player_stand, 0, 2)
+# rotozoom parameters (surface, angle, size(scale))
+player_stand_rect = player_stand.get_rect(center = (400,200))
+
+# one way to resize
+'''
+player_stand = pg.image.load("D:\Pygame\Jia Jie\InputFiles\graphics\Player\player_stand.png").convert_alpha()
+player_stand_scale = pg.transform.scale(player_stand, (200,200))
+player_stand_rect = player_stand_scale.get_rect(center = (400,200))
+...
+screen.blit(player_stand_scale, player_stand_rect)
+'''
+
+
 # game state 
-game_state = True
+game_state = False
+game_time = 0
+
+def timer():
+    default = pg.time.get_ticks() - game_time
+    current = default/1000
+    time_surf = font.render(f'{current:.0f}',False,20)
+    # render(string, False, 20)
+    # current is a float, formatted with :.0f to show no decimal places
+    time_rect = time_surf.get_rect(center = (400,50))
+    screen.blit(time_surf,time_rect)
 
 while True:
     for event in pg.event.get():
@@ -50,14 +76,15 @@ while True:
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 game_state = True
                 snail_rect.left = 800
+                game_time = pg.time.get_ticks()  # Reset timer to current time for zero start
 
     if game_state:
     # background
         screen.blit(sky_surf,(0, 0))
         screen.blit(ground_surf,(0, 300))
-        pg.draw.rect(screen, colorhex ,text_rect)
-        pg.draw.rect(screen, colorhex ,text_rect, 10)
-        screen.blit(text_surf,text_rect)
+        # pg.draw.rect(screen, colorhex ,text_rect)
+        # pg.draw.rect(screen, colorhex ,text_rect, 10)
+        # screen.blit(text_surf,text_rect)
         # moving sprite 
         snail_rect.x -= 4
         if snail_rect.right <= 0: 
@@ -75,12 +102,19 @@ while True:
         # sprites
         screen.blit(snail_surf, snail_rect)
         screen.blit(player_surf, player_rect)
+        
+        # time
+        timer()
     
     # collision / quit
         if player_rect.colliderect(snail_rect):
             game_state = False
+            
     else:
-        screen.fill("Black")
+        screen.fill("indigo")
+        screen.blit(player_stand, player_stand_rect)
+        
+# scaling
     
     pg.display.update()
     clock.tick(60)

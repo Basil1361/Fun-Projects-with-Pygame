@@ -2,10 +2,11 @@ import pygame, sys, time
 from pygame.locals import *
 
 
-def run_game(order, crossword, audio, theme):
+def run_game(order, words, crossword, arrangements, audio, theme):
     pygame.init()
     screen = pygame.display.set_mode((1200, 830))
     pygame.display.set_caption("Wordsearch Puzzle - Game")
+
 
     def showText(font, x, y, text, color=(255, 255, 255)):
         textImage = font.render(text, True, color)
@@ -21,22 +22,67 @@ def run_game(order, crossword, audio, theme):
 
 
     mouseX = mouseY = moveX = moveY = mouseDown = mouseUp = mouseDownX = mouseDownY = mouseUpX = mouseUpY = 0
+
+    dragging = False
+    quit_rect = pygame.Rect(1050, 0, 150, 50)
+    click_to_quit = False
+    start_pos = (0, 0)
+    end_pos = (0, 0)
+
+    initial_width = 50
+    initial_height = (830 - order * 45) // 2
+
+    arrangements_in_coor = []
+    for i, j, k in arrangements:
+        start_x_coor = initial_width + 45*j[1] + 23
+        start_y_coor = initial_height + 45*j[0] + 23
+        end_x_coor = initial_width + 45*k[1] + 23
+        end_y_coor = initial_height + 45*k[0] + 23
+        arrangements_in_coor.append((i, j, k))
+
+    chopsticks = False
+
+
+
+
+
+
+
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == MOUSEMOTION:
-                mouseX, mouseY = event.pos
-                moveX, moveY = event.rel
+
+
             elif event.type == MOUSEBUTTONDOWN:
-                mouseDown = event.button
-                mouseDownX, mouseDownY = event.pos
+                if event.button == 1:
+                    dragging = True
+                    down_start_pos = event.pos
+                    down_end_pos = event.pos
+                    mouseDownX, mouseDownY = event.pos
+                    if quit_rect.collidepoint(down_start_pos):
+                        click_to_quit = True
+
+
             elif event.type == MOUSEBUTTONUP:
-                mouseUp = event.button
-                mouseUpX, mouseUpY = event.pos
+                up_pos = event.pos
+                if event.button == 1:
+                    dragging = False
+                    mouseUpX, mouseUpY = event.pos
+                    if quit_rect.collidepoint(up_pos) and click_to_quit:
+                        pygame.quit()
+                        sys.exit
+                click_to_quit = False
+
+            elif event.type == MOUSEMOTION and dragging:
+                down_end_pos = event.pos
 
         screen.fill(black)
+
+        showText(myFont, 1030, 750, f"({str(mouseDownX)}, {str(mouseDownY)})", white)
+        showText(myFont, 1030, 780, f"({str(mouseUpX)}, {str(mouseUpY)})")
+
 
         initial_width = 50
         initial_height = (830 - order*45) // 2
@@ -50,6 +96,10 @@ def run_game(order, crossword, audio, theme):
             for char_index, char in enumerate(char_list):
                 showText(myFont, initial_width+10 + 45*char_index, initial_height + 45*index, char, white)
 
+        for index, word in enumerate(words):
+            word = word.upper()
+            showText(myFont, 950, 75+index*35, word, white)
+
 
 
 
@@ -59,14 +109,27 @@ def run_game(order, crossword, audio, theme):
         pygame.draw.rect(screen, blue, (1050, 0, 150, 50), 0)
         showText(myFont, 1070, 0, "< Return", white)
 
+
+
+
         x, y = pygame.mouse.get_pos()
         b1, b2, b3 = pygame.mouse.get_pressed()
 
-        quit_cond = False
+        '''quit_cond = False
         if 1050<x<1200 and 0<y<50 and b1 == True:
             quit_cond = True
         if quit_cond:
-            sys.exit()
+            sys.exit()'''
+
+
+        if dragging:
+            pygame.draw.line(screen, yellow, down_start_pos, down_end_pos, 1)
+
+        if 343-23<mouseDownX<343+23 and 145-23<mouseDownY<145+23 and 748-23<mouseUpX<748+23 and 145-23<mouseUpY<145+23:
+            chopsticks = True
+
+        if chopsticks:
+            pygame.draw.line(screen, yellow, (343, 145), (748, 145), 1)
 
 
 
@@ -79,21 +142,27 @@ def run_game(order, crossword, audio, theme):
 
 
 if __name__ == "__main__":
-    puzzle = [['K', 'F', 'E', 'N', 'D', 'V', 'P', 'X', 'Q', 'J', 'F', 'M', 'P', 'C', 'K', 'M', 'N'],
-              ['N', 'I', 'E', 'Q', 'L', 'N', 'N', 'T', 'M', 'G', 'N', 'L', 'K', 'M', 'T', 'F', 'R'],
-              ['D', 'J', 'O', 'M', 'W', 'B', 'K', 'C', 'B', 'S', 'E', 'M', 'A', 'J', 'F', 'M', 'R'],
-              ['T', 'W', 'A', 'V', 'C', 'H', 'A', 'M', 'E', 'L', 'E', 'O', 'N', 'F', 'O', 'R', 'P'],
-              ['W', 'C', 'D', 'B', 'A', 'N', 'A', 'N', 'A', 'A', 'O', 'T', 'D', 'S', 'F', 'X', 'W'],
-              ['B', 'W', 'J', 'C', 'W', 'X', 'V', 'B', 'Q', 'P', 'Y', 'Y', 'Q', 'P', 'D', 'O', 'U'],
-              ['A', 'U', 'J', 'B', 'R', 'S', 'H', 'C', 'G', 'R', 'Q', 'R', 'A', 'M', 'X', 'K', 'J'],
-              ['P', 'W', 'L', 'P', 'Q', 'V', 'M', 'G', 'Q', 'S', 'N', 'F', 'E', 'E', 'T', 'Y', 'U'],
-              ['P', 'R', 'N', 'O', 'T', 'A', 'J', 'M', 'O', 'G', 'M', 'J', 'Y', 'G', 'K', 'I', 'C'],
-              ['L', 'D', 'N', 'H', 'X', 'U', 'U', 'S', 'Q', 'D', 'O', 'U', 'J', 'U', 'B', 'F', 'F'],
-              ['E', 'P', 'J', 'R', 'B', 'E', 'Y', 'Z', 'B', 'S', 'X', 'W', 'T', 'E', 'D', 'H', 'N'],
-              ['H', 'L', 'C', 'S', 'N', 'F', 'A', 'N', 'G', 'U', 'P', 'S', 'R', 'J', 'F', 'W', 'Y'],
-              ['S', 'C', 'C', 'J', 'H', 'J', 'R', 'F', 'Q', 'U', 'P', 'C', 'S', 'L', 'B', 'U', 'B'],
-              ['Q', 'W', 'W', 'C', 'E', 'N', 'F', 'Y', 'Y', 'G', 'K', 'O', 'X', 'X', 'I', 'R', 'H'],
-              ['P', 'Q', 'S', 'F', 'Q', 'P', 'K', 'X', 'E', 'A', 'R', 'O', 'M', 'G', 'X', 'Y', 'C'],
-              ['N', 'B', 'Q', 'N', 'D', 'G', 'D', 'P', 'C', 'C', 'B', 'O', 'S', 'B', 'I', 'D', 'G'],
-              ['L', 'K', 'O', 'F', 'N', 'P', 'F', 'S', 'T', 'A', 'A', 'N', 'F', 'G', 'L', 'F', 'T']]
-    run_game(17, puzzle, "None", "Black")
+    puzzle = [['P', 'S', 'K', 'O', 'S', 'Q', 'Q', 'D', 'R', 'K', 'K', 'G', 'E', 'Z', 'Z', 'B', 'P'],
+['D', 'C', 'K', 'G', 'C', 'U', 'C', 'U', 'M', 'B', 'E', 'R', 'B', 'W', 'Q', 'Y', 'G'],
+['W', 'H', 'X', 'B', 'D', 'R', 'C', 'H', 'O', 'P', 'S', 'T', 'I', 'C', 'K', 'S', 'K'],
+['P', 'K', 'V', 'T', 'L', 'G', 'V', 'O', 'D', 'P', 'M', 'S', 'R', 'C', 'N', 'T', 'S'],
+['C', 'Z', 'E', 'T', 'H', 'N', 'I', 'C', 'I', 'T', 'Y', 'A', 'O', 'F', 'E', 'Z', 'V'],
+['O', 'Q', 'Y', 'F', 'D', 'B', 'N', 'W', 'Z', 'V', 'Q', 'X', 'F', 'D', 'F', 'Y', 'G'],
+['L', 'P', 'K', 'X', 'F', 'Q', 'M', 'M', 'A', 'C', 'R', 'H', 'E', 'K', 'K', 'Y', 'Z'],
+['L', 'X', 'T', 'Y', 'W', 'A', 'M', 'X', 'L', 'T', 'C', 'K', 'H', 'H', 'M', 'E', 'Z'],
+['I', 'D', 'D', 'H', 'B', 'A', 'Z', 'B', 'D', 'Q', 'W', 'Q', 'W', 'C', 'X', 'D', 'L'],
+['S', 'G', 'E', 'A', 'H', 'C', 'Y', 'N', 'N', 'G', 'I', 'H', 'G', 'L', 'M', 'I', 'R'],
+['I', 'I', 'S', 'R', 'H', 'F', 'C', 'A', 'T', 'T', 'E', 'M', 'P', 'T', 'M', 'T', 'B'],
+['O', 'M', 'E', 'C', 'T', 'K', 'X', 'A', 'Z', 'J', 'P', 'E', 'J', 'Y', 'U', 'H', 'R'],
+['N', 'B', 'R', 'I', 'N', 'K', 'C', 'X', 'K', 'I', 'N', 'L', 'Q', 'H', 'O', 'Q', 'Z'],
+['K', 'Q', 'T', 'T', 'N', 'E', 'Q', 'P', 'L', 'X', 'V', 'I', 'G', 'U', 'R', 'L', 'T'],
+['F', 'P', 'E', 'O', 'G', 'Q', 'M', 'D', 'B', 'A', 'M', 'E', 'C', 'C', 'A', 'Z', 'Z'],
+['D', 'I', 'D', 'H', 'W', 'K', 'R', 'E', 'S', 'E', 'R', 'V', 'O', 'I', 'R', 'V', 'A'],
+['W', 'W', 'N', 'V', 'I', 'O', 'L', 'A', 'T', 'I', 'O', 'N', 'X', 'H', 'G', 'X', 'R']]
+    words = ['brink', 'deserted', 'mecca', 'reservoir', 'chopsticks', 'tempt', 'violation', 'collision', 'ethnicity', 'cucumber']
+             #, ['apple', 'banana', 'chameleon', 'dandeleon', 'eerie', 'furious', 'granny', 'hinge', 'illuminate', 'joke']
+    arrangement = [('CHOPSTICKS', (2, 6), (2, 15)), ('RESERVOIR', (15, 6), (15, 14)), ('VIOLATION', (16, 3), (16, 11)),
+     ('COLLISION', (4, 0), (12, 0)), ('ETHNICITY', (4, 2), (4, 10)), ('DESERTED', (8, 2), (15, 2)),
+     ('CUCUMBER', (1, 4), (1, 11)), ('BRINK', (12, 1), (12, 5)), ('MECCA', (14, 10), (14, 14)),
+     ('TEMPT', (10, 9), (10, 13))]
+    run_game(17, words, puzzle, arrangement, "None", "Black")

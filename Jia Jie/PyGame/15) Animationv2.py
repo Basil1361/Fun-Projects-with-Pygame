@@ -80,7 +80,6 @@ def display_score():
     screen.blit(time_surf,time_rect)
     return int(current)  # Return the score as an integer
 
-
 def obstacle_movement(obstacle_list):
     if obstacle_list:
         for obstacle_rect in obstacle_list:

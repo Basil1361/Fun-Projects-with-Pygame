@@ -1,1 +1,0 @@
-            # snail_rect.x -= 5

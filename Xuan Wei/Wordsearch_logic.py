@@ -98,3 +98,9 @@ def make_answer_view(order, grid):
 
 def grid_to_str(grid):
     return "\n".join("".join(row) for row in grid)
+
+question = create_crossword(10, ["apple", "hell"])
+add_random_letters(10, question)
+question = grid_to_str(question)
+print(question)
+

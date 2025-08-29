@@ -108,7 +108,7 @@ class Start(QWidget):
 
         self.start_game_btn = QPushButton("Launch pygame", self)
         self.start_game_btn.clicked.connect(self.clicked_start_game)
-        self.start_game_btn.setToolTip("Start the game.\nOpen setup.")
+        self.start_game_btn.setToolTip("Launch the game.")
         self.show()
 
 
@@ -203,20 +203,23 @@ class Start(QWidget):
             theme = self.theme_combo.currentText()
 
 
-            crossword = WS.create_crossword(order, words)
+            crossword_output = WS.create_crossword(order, words)
+            crossword = None
+            arrangements = None
+            for item in crossword_output:
+                if crossword_output.index(item) == 0:
+                    crossword = item
+                elif crossword_output.index(item) == 1:
+                    arrangements = item
             crossword_added_letters = WS.add_random_letters(order, copy.deepcopy(crossword))
 
-            crossword_grid = WS.grid_to_str(copy.deepcopy(crossword))
-            crossword_added_letters_grid = WS.grid_to_str(crossword_added_letters)
-            #print(crossword_grid)
-            #print(crossword_added_letters_grid)
 
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 
         p = multiprocessing.Process(
             target=WSG.run_game,
-            args=(order, crossword_added_letters, audio, theme)
+            args=(order, words, crossword_added_letters, arrangements, audio, theme)
         )
         p.start()
 
@@ -225,3 +228,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     ex = Menu()
     sys.exit(app.exec())
+

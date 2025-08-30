@@ -1,0 +1,4 @@
+word = "cat" 
+
+for i, ch in enumerate(word):
+    print(i, ch)

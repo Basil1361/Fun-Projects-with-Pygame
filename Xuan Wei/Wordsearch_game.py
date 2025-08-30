@@ -38,10 +38,11 @@ def run_game(order, words, crossword, arrangements, audio, theme):
         start_y_coor = initial_height + 45*j[0] + 23
         end_x_coor = initial_width + 45*k[1] + 23
         end_y_coor = initial_height + 45*k[0] + 23
-        arrangements_in_coor.append((i, j, k))
+        arrangements_in_coor.append([i, (start_x_coor, start_y_coor), (end_x_coor, end_y_coor), False])
 
-    chopsticks = False
-
+    words = sorted(words, key=len, reverse=True)
+    remaining_words = words
+    total_words = len(words)
 
 
 
@@ -101,37 +102,30 @@ def run_game(order, words, crossword, arrangements, audio, theme):
             showText(myFont, 950, 75+index*35, word, white)
 
 
-
-
-
-
-
         pygame.draw.rect(screen, blue, (1050, 0, 150, 50), 0)
         showText(myFont, 1070, 0, "< Return", white)
 
 
 
-
-        x, y = pygame.mouse.get_pos()
-        b1, b2, b3 = pygame.mouse.get_pressed()
-
-        '''quit_cond = False
-        if 1050<x<1200 and 0<y<50 and b1 == True:
-            quit_cond = True
-        if quit_cond:
-            sys.exit()'''
-
-
         if dragging:
             pygame.draw.line(screen, yellow, down_start_pos, down_end_pos, 1)
 
-        if 343-23<mouseDownX<343+23 and 145-23<mouseDownY<145+23 and 748-23<mouseUpX<748+23 and 145-23<mouseUpY<145+23:
-            chopsticks = True
+        for x in arrangements_in_coor:
+            if (x[1][0]-23<mouseDownX<x[1][0]+23 and x[1][1]-23<mouseDownY<x[1][1]+23
+                    and x[2][0]-23<mouseUpX<x[2][0]+23 and x[2][1]-23<mouseUpY<x[2][1]+23):
+                x[3] = True
 
-        if chopsticks:
-            pygame.draw.line(screen, yellow, (343, 145), (748, 145), 1)
+        count = 0
+        for y in arrangements_in_coor:
+            if y[3]:
+                pygame.draw.line(screen, yellow, y[1], y[2], 1)
+                pygame.draw.line(screen, yellow, (940, 75+ arrangements_in_coor.index(y)*35 +22),
+                                 (1150, 75+ arrangements_in_coor.index(y)*35 +22), 1)
+                count += 1
 
-
+        if count == total_words:
+            pygame.draw.rect(screen, black, (200, 200, 800, 430), 0)
+            showText(myFont, 400, 400, "GAME OVER", white)
 
         keys = pygame.key.get_pressed()
         if keys[K_ESCAPE]:

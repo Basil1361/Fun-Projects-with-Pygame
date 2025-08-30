@@ -1,5 +1,7 @@
 # only has 2d
 # only has verti (down), hori (up). 
+# excluding diagonals.
+# only orientation of left to right 
 
 import random
 import string

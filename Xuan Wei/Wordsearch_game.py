@@ -17,7 +17,7 @@ def run_game(order, words, crossword, arrangements, audio, theme):
     red = (255, 0, 0)
     yellow = (255, 255, 0)
     blue = (0, 0, 200)
-    white = (230, 230, 230)
+    white = (255, 255, 255)
     black = (50, 50, 50)
 
 
@@ -44,8 +44,17 @@ def run_game(order, words, crossword, arrangements, audio, theme):
     remaining_words = words
     total_words = len(words)
 
+    def playMusic(name, volume):
+        pygame.mixer.music.load(f"Resources/Wordsearch/Audio/{name}")
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(volume)
 
+    if audio != "Off":
+        playMusic(audio, 1)
 
+    if theme == "Mona's Starry Night.jpg":
+        bg = pygame.image.load(f"Resources/Wordsearch/Image/{theme}").convert_alpha()
+        scaled_bg = pygame.transform.smoothscale(bg, (1200, 830))
 
 
 
@@ -79,7 +88,10 @@ def run_game(order, words, crossword, arrangements, audio, theme):
             elif event.type == MOUSEMOTION and dragging:
                 down_end_pos = event.pos
 
-        screen.fill(black)
+        if theme == black:
+            screen.fill(black)
+        elif theme == "Mona's Starry Night.jpg":
+            screen.blit(scaled_bg, (0, 0))
 
         showText(myFont, 1030, 750, f"({str(mouseDownX)}, {str(mouseDownY)})", white)
         showText(myFont, 1030, 780, f"({str(mouseUpX)}, {str(mouseUpY)})")
@@ -159,4 +171,4 @@ if __name__ == "__main__":
      ('COLLISION', (4, 0), (12, 0)), ('ETHNICITY', (4, 2), (4, 10)), ('DESERTED', (8, 2), (15, 2)),
      ('CUCUMBER', (1, 4), (1, 11)), ('BRINK', (12, 1), (12, 5)), ('MECCA', (14, 10), (14, 14)),
      ('TEMPT', (10, 9), (10, 13))]
-    run_game(17, words, puzzle, arrangement, "None", "Black")
+    run_game(17, words, puzzle, arrangement, "1-06-Good_Night_Liyue.mp3", "Mona's Starry Night.jpg")
